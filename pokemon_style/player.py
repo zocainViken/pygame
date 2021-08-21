@@ -5,7 +5,7 @@ import random
 
 
 class Player(pygame.sprite.Sprite):
-    def __init__(self,x,y) -> None:
+    def __init__(self,x,y, name='player', scale = 1) -> None:
         super().__init__()
         self.animate = False
         self.speed = 3
@@ -15,17 +15,17 @@ class Player(pygame.sprite.Sprite):
         # action for select animation in animation list
         self.action = 0# 0: down, 1:left, 2: up, 3: right, 
         self.frame_index = 0
-        scale = 1
+        scale = scale
         # load animation for player
         animations_type = ['down', 'left', 'up', 'right']
         for animation in animations_type:
             temp_list = []
-            for file in os.listdir(f'assets/player/{animation}/'):
+            for file in os.listdir(f'assets/{name}/{animation}/'):
                 #print(file)
-                img = pygame.image.load(f'assets/player/{animation}/{file}').convert_alpha()
+                img = pygame.image.load(f'assets/{name}/{animation}/{file}').convert_alpha()
                 img_height = img.get_height()
                 img_width = img.get_width()
-                img = pygame.transform.scale(img,(img_width * scale, img_height * scale) )
+                img = pygame.transform.scale(img,(int(img_width * scale), int(img_height * scale)) )
                 # remove black background image
                 img.set_colorkey([255, 255, 255])
                 temp_list.append(img)
@@ -36,9 +36,12 @@ class Player(pygame.sprite.Sprite):
         self.image = self.animation_list[self.action][self.frame_index]
         self.rect = self.image.get_rect()
         self.rect.center = (x, y)
-        self.feet = pygame.Rect(0, 0, self.rect.width * 0.5, 12)
+        #int(self.player.position[0]), int(self.player.position[0])
+        #self.feet = pygame.Rect(int(self.position[0]), int(self.position[1]),  self.rect.width**0.5, 12)
         self.position = [x, y]
         self.old_position = self.position.copy()
+        self.feet = pygame.Rect(int(self.position[0]), int(self.position[1]),  self.rect.width**0.5, 20)
+        
 
         self.update_pnj_time = pygame.time.get_ticks()
         self.pnj_choice = 6
@@ -128,7 +131,7 @@ class Player(pygame.sprite.Sprite):
             choice = self.pnj_choice
             #choice = self.action
             if choice >= 4:
-                print('No movement')
+                #print('No movement')
                 self.animate = False
                 pass
             # 0: down, 1:left, 2: up, 3: right
@@ -136,26 +139,31 @@ class Player(pygame.sprite.Sprite):
                 self.animate = True
                 self.action = choice
                 self.move_down()
-                print('move down')
+                self.update_position()
+                #print('move down')
             elif choice == 1:
                 self.animate = True
                 self.action = choice
                 self.move_left()
-                print('move left')
+                self.update_position()
+                #print('move left')
             elif choice == 2:
                 self.animate = True
                 self.action = choice
                 self.move_up()
-                print('move up')
+                self.update_position()
+                #print('move up')
             elif choice == 4:
                 self.animate = True
                 self.action = choice
                 self.move_right()
-                print('move right')
+                self.update_position()
+                #print('move right')
 
     def basic_talking(self):
         if self.PNJ == True:
             print('I can talk now')
+            self.move_back_collision()
 
 
 

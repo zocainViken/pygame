@@ -1,6 +1,6 @@
 <?xml version="1.0" encoding="UTF-8"?>
-<map version="1.5" tiledversion="1.7.0" orientation="orthogonal" renderorder="right-down" width="25" height="25" tilewidth="16" tileheight="16" infinite="0" nextlayerid="6" nextobjectid="20">
- <tileset firstgid="1" source="house.tsx"/>
+<map version="1.5" tiledversion="1.7.0" orientation="orthogonal" renderorder="right-down" width="25" height="25" tilewidth="16" tileheight="16" infinite="0" nextlayerid="6" nextobjectid="21">
+ <tileset firstgid="1" source="../../../../../Desktop/python_project/game/rpg0/assets/house.tsx"/>
  <layer id="1" name="floor" width="25" height="25">
   <data encoding="csv">
 302,302,302,302,302,302,302,302,302,302,302,302,302,302,302,302,302,302,302,302,302,302,302,302,302,
@@ -139,5 +139,8 @@
    <point/>
   </object>
   <object id="19" name="exit_house" x="143.508" y="383.834" width="31.9452" height="14.7439"/>
+  <object id="20" name="bunny" x="85.3333" y="234.667">
+   <point/>
+  </object>
  </objectgroup>
 </map>
