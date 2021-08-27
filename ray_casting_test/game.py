@@ -1,6 +1,7 @@
 # base from:
 # https://www.youtube.com/watch?v=6FwR56UKlYU&list=PLzuEVvwBnAsZGeSVhOXpnW-ULsGYpNyQe&index=2&ab_channel=StandaloneCoder
-
+# image from:
+# https://github.com/StanislavPetrovV/Raycasting-3d-game-tutorial/tree/master/part%20%237
 import pygame
 import math
 from player import Player
@@ -49,49 +50,29 @@ class Game:
         while run:
             # draw bg color
             self.screen.fill(self.black)
-            '''# draw player
-            #                   where       color       position        radius
-            pygame.draw.circle(self.screen, self.green, self.player.pos, 12)
-            # capture.png explanation
-            pygame.draw.line(self.screen, self.green, self.player.pos,
-                            (self.player.x + self.width * math.cos(self.player.angle),
-                             self.player.y + self.width * math.sin(self.player.angle) ))'''
+
             self.player.movement()
 
             # drawing our sky
-            self.draw.background()
-            '''# draw our sky
-            pygame.draw.rect(self.screen, blue_sky, (0, 0, self.width, self.half_height))
-            # draw our floor
-            pygame.draw.rect(self.screen, (50, 50, 50), (0, self.half_height, self.width, self.half_height))'''
-            
+            self.draw.background(self.player.angle)
+           
             # draw our ray casting
-            #self.ray_casting.ray_caster(self.screen, self.player.pos, self.player.angle)
             self.draw.world(self.player.pos, self.player.angle)
 
             # draw our fps
             self.draw.fps(self.clock)
+
+            # draw mini map
             self.draw.mini_map(self.player)
 
-
-
-            '''# draw world*
-            for x, y in self.world.world_map:
-                pygame.draw.rect(self.screen, self.gray, (x, y, self.tile, self.tile), 2 )'''
-            ''' #draw player
-            pygame.draw.circle(self.screen, self.green, self.player.pos, 12)
-            # draw where I face
-            pygame.draw.line(self.screen, self.green, self.player.pos,
-                            (self.player.x + self.width * math.cos(self.player.angle),
-                             self.player.y + self.width * math.sin(self.player.angle) ))'''
 
             for event in pygame.event.get():
                 if event.type == pygame.QUIT:
                     run = False
             
             pygame.display.update()
-            self.clock.tick(self.FPS)
-            #self.clock.tick()
+            #self.clock.tick(self.FPS)
+            self.clock.tick()
 
 
         pygame.quit()

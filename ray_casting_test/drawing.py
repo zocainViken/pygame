@@ -26,20 +26,33 @@ class Drawing():
         self.green = (0, 255, 255)
         self.yellow = (250, 250, 0)
         self.red = (250, 0, 0)
+        self.sandy = (244, 164, 96)
+
+        # load some texture
+        self.textures = {'1' : pygame.image.load('img/wall1.png').convert_alpha(),
+                        '2' : pygame.image.load('img/wall2.png').convert_alpha(),
+                        '3' : pygame.image.load('img/wall3.png').convert_alpha(),
+                        'S' : pygame.image.load('img/sky1.png').convert_alpha(),}
 
         self.ray_casting = RayCasting(self.screen, int(self.screen.get_height()) / 2)
         self.font = pygame.font.SysFont('Arial', 32, bold = True)
         
 
-    def background(self):
-        blue_sky = (2, 120, 245)
+    def background(self, angle):
+        '''blue_sky = (2, 120, 245)
         # draw our sky
-        pygame.draw.rect(self.screen, blue_sky, (0, 0, self.width, int(self.screen.get_height()) / 2))
+        pygame.draw.rect(self.screen, blue_sky, (0, 0, self.width, int(self.screen.get_height()) / 2))'''
+
+        sky_offset = -5 * math.degrees(angle) % self.width
+        self.screen.blit(self.textures['S'], (sky_offset, 0))
+        self.screen.blit(self.textures['S'], (sky_offset - self.width, 0))
+        self.screen.blit(self.textures['S'], (sky_offset + self.width, 0))
+        
         # draw our floor
-        pygame.draw.rect(self.screen, (50, 50, 50), (0, int(self.screen.get_height()) / 2, self.width, int(self.screen.get_height()) / 2))
+        pygame.draw.rect(self.screen, self.sandy, (0, int(self.screen.get_height()) / 2, self.width, int(self.screen.get_height()) / 2))
 
     def world(self, player_pos, player_angle):
-        self.ray_casting.ray_caster(self.screen, player_pos, player_angle)
+        self.ray_casting.ray_caster(self.screen, player_pos, player_angle, self.textures)
 
     def fps(self, clock):
         display_fps = str(int(clock.get_fps()))
