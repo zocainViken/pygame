@@ -1,13 +1,35 @@
 
 import pygame
+import math
+
 from raycasting import RayCasting
+from world import World
 
 class Drawing():
-    def __init__(self, screen) -> None:
+    def __init__(self, screen, mini_screen) -> None:
         self.screen = screen 
+        self.mini_screen = mini_screen
+
+        self.world_ = World()
+        self.map_scale = self.world_.map_scale
+        self.world_map = self.world_.mini_map
+        self.tile = self.world_.tile
+
+        self.width = self.screen.get_width()
+        self.height = self.screen.get_height()
+        self.mini_map_pos = (0, self.height - self.height // self.map_scale)
+
+        # some color variable
+        self.white = (255, 255, 255)
+        self.black = (0, 0, 0)
+        self.gray = (155, 155, 155)
+        self.green = (0, 255, 255)
+        self.yellow = (250, 250, 0)
+        self.red = (250, 0, 0)
+
         self.ray_casting = RayCasting(self.screen, int(self.screen.get_height()) / 2)
         self.font = pygame.font.SysFont('Arial', 32, bold = True)
-        self.width = self.screen.get_width()
+        
 
     def background(self):
         blue_sky = (2, 120, 245)
@@ -23,6 +45,21 @@ class Drawing():
         display_fps = str(int(clock.get_fps()))
         render = self.font.render(display_fps, 0, (255, 0, 0))
         self.screen.blit(render, (self.width - 65, 5))
+
+    def mini_map(self, player):
+        ratio = 5
+        self.mini_screen.fill(self.black)
+        mapx, mapy = player.x // self.map_scale, player.y // self.map_scale
+        #draw player
+        pygame.draw.circle(self.mini_screen, self.green, (mapx, mapy), 3)
+        pygame.draw.line(self.mini_screen, self.yellow, (mapx, mapy),
+                        (mapx + 13 * math.cos(player.angle),
+                         mapy + 13 * math.sin(player.angle) ))
+
+        # draw world*
+        for x, y in self.world_map:
+            pygame.draw.rect(self.mini_screen, self.gray, (x, y, self.tile//ratio, self.tile//ratio) )
+        self.screen.blit(self.mini_screen, self.mini_map_pos)
 
 
 

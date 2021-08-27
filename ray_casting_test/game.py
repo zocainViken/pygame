@@ -1,3 +1,6 @@
+# base from:
+# https://www.youtube.com/watch?v=6FwR56UKlYU&list=PLzuEVvwBnAsZGeSVhOXpnW-ULsGYpNyQe&index=2&ab_channel=StandaloneCoder
+
 import pygame
 import math
 from player import Player
@@ -27,16 +30,22 @@ class Game:
         self.clock = pygame.time.Clock()
         self.FPS = 60
         self.tile = 50
-        self.draw = Drawing(self.screen)
+        
 
         # some import 
         self.player = Player(int(self.half_width), int(self.half_height))
         self.world = World()
         self.ray_casting = RayCasting(self.screen, self.half_height)
 
+        # mini map screen
+        self.mini_screen = pygame.Surface((self.width // self.world.map_scale, self.height // self.world.map_scale))
+        self.draw = Drawing(self.screen, self.mini_screen)
+
+
     def run(self):
         #blue_sky = (2, 120, 245)
         run = True
+        
         while run:
             # draw bg color
             self.screen.fill(self.black)
@@ -62,12 +71,19 @@ class Game:
 
             # draw our fps
             self.draw.fps(self.clock)
+            self.draw.mini_map(self.player)
 
 
 
             '''# draw world*
             for x, y in self.world.world_map:
                 pygame.draw.rect(self.screen, self.gray, (x, y, self.tile, self.tile), 2 )'''
+            ''' #draw player
+            pygame.draw.circle(self.screen, self.green, self.player.pos, 12)
+            # draw where I face
+            pygame.draw.line(self.screen, self.green, self.player.pos,
+                            (self.player.x + self.width * math.cos(self.player.angle),
+                             self.player.y + self.width * math.sin(self.player.angle) ))'''
 
             for event in pygame.event.get():
                 if event.type == pygame.QUIT:
@@ -75,6 +91,7 @@ class Game:
             
             pygame.display.update()
             self.clock.tick(self.FPS)
+            #self.clock.tick()
 
 
         pygame.quit()
