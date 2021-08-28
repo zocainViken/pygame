@@ -21,29 +21,30 @@ class RayCasting:
         self.projection_coefficient = 3 * self.dist * int(self.tile)
         self.scale = int(screen.get_width()) // self.num_ray
 
-        '''# texture setting
-        self.texture_width = 1200
-        self.texture_height = 1200
-        self.texture_scale = self.texture_width // self.tile'''
 
 
     def mapping(self, ox, oy):
         return (ox // self.tile) * self.tile, (oy // self.tile) * self.tile
 
-    def ray_caster(self, screen, player_pos, player_angle, textures):
+    #def ray_caster(self, screen, player_pos, player_angle, textures):
+    def ray_caster(self, player, textures):
         # texture setting
         texture_width = 1200
         texture_height = 1200
         texture_scale = texture_width // self.tile
 
+        walls = []
+
         # capture6.png --> 9
-        ox, oy = player_pos
+        ox, oy = player.pos
         xm, ym = self.mapping(ox, oy)
-        current_angle = player_angle - self.half_fov
+        current_angle = player.angle - self.half_fov
 
         for ray in range(self.num_ray):
             sin_a = math.sin(current_angle)
             cos_a = math.cos(current_angle)
+            sin_a = sin_a if sin_a else 0.000001
+            cos_a = cos_a if cos_a else 0.000001
 
             # verticals
             x, dx = (xm + self.tile, 1)if cos_a >= 0 else (xm, -1)
@@ -70,17 +71,19 @@ class RayCasting:
             # projection
             depth, offset, texture = (depth_v, y_v, texture_v) if depth_v < depth_h else (depth_h, x_h, texture_h)
             offset = int(offset) % self.tile
-            depth *= math.cos(player_angle - current_angle)
+            depth *= math.cos(player.angle - current_angle)
             depth = max(depth, 0.00001)
             projection_height = min(int(self.projection_coefficient / depth), self.height * 2)
+            
             wall_column = textures[texture].subsurface(offset * texture_scale, 0, texture_scale, texture_height)
             wall_column = pygame.transform.scale(wall_column, (self.scale, projection_height))
-            screen.blit(wall_column, (ray * self.scale, self.half_height - projection_height // 2))
-            '''c = 255 / (1 + depth * depth * 0.0002)
-            color = (c, c//2, c//3)
-            pygame.draw.rect(self.screen, color,
-                            (ray * self.scale, self.half_height - projection_height // 2, self.scale, projection_height ))'''
+            
+            wall_pos = (ray * self.scale, self.half_height - projection_height // 2)
+            walls.append((depth, wall_column, wall_pos))
+            
             current_angle += self.delta_angle
+
+        return walls
 
 
 

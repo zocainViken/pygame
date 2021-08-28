@@ -8,6 +8,7 @@ from player import Player
 from world import World
 from raycasting import RayCasting
 from drawing import Drawing
+from sprite import *
 
 class Game:
     def __init__(self) -> None:
@@ -37,6 +38,7 @@ class Game:
         self.player = Player(int(self.half_width), int(self.half_height))
         self.world = World()
         self.ray_casting = RayCasting(self.screen, self.half_height)
+        self.sprites = Sprites()
 
         # mini map screen
         self.mini_screen = pygame.Surface((self.width // self.world.map_scale, self.height // self.world.map_scale))
@@ -57,7 +59,10 @@ class Game:
             self.draw.background(self.player.angle)
            
             # draw our ray casting
-            self.draw.world(self.player.pos, self.player.angle)
+            #self.draw.world(self.player.pos, self.player.angle)
+            walls = self.ray_casting.ray_caster(self.player, self.draw.textures)
+            
+            self.draw.world(walls + [obj.object_locate(self.player, walls) for obj in self.sprites.list_objects ])
 
             # draw our fps
             self.draw.fps(self.clock)
@@ -71,8 +76,8 @@ class Game:
                     run = False
             
             pygame.display.update()
-            #self.clock.tick(self.FPS)
-            self.clock.tick()
+            self.clock.tick(self.FPS)
+            #self.clock.tick()
 
 
         pygame.quit()

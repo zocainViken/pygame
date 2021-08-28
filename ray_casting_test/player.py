@@ -9,6 +9,8 @@ class Player():
         self.pos = (self.x, self.y)
         self.angle = 0
         self.speed = 2
+        
+        #self.double_pi = 2 * math.pi
 
 
 
@@ -16,6 +18,9 @@ class Player():
         # capture1.png
         sin_a = math.sin(self.angle)
         cos_a = math.cos(self.angle)
+
+        double_pi = 2 * math.pi
+
         keys = pygame.key.get_pressed()
         
         if keys[pygame.K_w]:
@@ -49,6 +54,7 @@ class Player():
             self.angle += 0.04
         
         self.pos = (self.x, self.y)
+        self.angle %= double_pi
 
 
 
