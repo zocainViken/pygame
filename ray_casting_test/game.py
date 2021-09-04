@@ -6,9 +6,11 @@ import pygame
 import math
 from player import Player
 from world import World
-from raycasting import RayCasting
+#from raycasting import RayCasting
 from drawing import Drawing
 from sprite import *
+from raycasting import ray_caster, ray_casting_walls
+from interaction import Interaction
 
 class Game:
     def __init__(self) -> None:
@@ -35,45 +37,60 @@ class Game:
         
 
         # some import 
-        self.player = Player(int(self.half_width), int(self.half_height))
         self.world = World()
-        self.ray_casting = RayCasting(self.screen, self.half_height)
         self.sprites = Sprites()
+        self.player = Player(int(self.half_width), int(self.half_height), self.world.collision_wall, self.sprites)# mini map screen
+        self.mini_screen = pygame.Surface(self.world.minimap_res)
+        self.draw = Drawing(self.screen, self.mini_screen, self.player, self.clock)
+        self.interaction = Interaction(self.player, self.sprites, self.draw, self.world.world_map)
 
-        # mini map screen
-        self.mini_screen = pygame.Surface((self.width // self.world.map_scale, self.height // self.world.map_scale))
-        self.draw = Drawing(self.screen, self.mini_screen)
+        
 
 
     def run(self):
-        #blue_sky = (2, 120, 245)
-        run = True
+        # launch start menu
+        self.draw.menu()
         
-        while run:
-            # draw bg color
-            self.screen.fill(self.black)
+        #blue_sky = (2, 120, 245)
+        pygame.mouse.set_visible(False)
+        run = True
+    
+        # play main theme music
+        #self.interaction.play_music()
 
+        while run:
             self.player.movement()
 
             # drawing our sky
             self.draw.background(self.player.angle)
            
             # draw our ray casting
-            #self.draw.world(self.player.pos, self.player.angle)
-            walls = self.ray_casting.ray_caster(self.player, self.draw.textures)
-            
-            self.draw.world(walls + [obj.object_locate(self.player, walls) for obj in self.sprites.list_objects ])
+            #walls = self.ray_casting.ray_caster(self.player, self.draw.textures)
+            player_pos = (self.player.x, self.player.y)
+            walls, wall_shot = ray_casting_walls(player_pos, self.player.angle, self.draw.textures, self.world.world_map, self.world.world_width, self.world.world_height)
+            self.draw.world(walls + [obj.object_locate(self.player) for obj in self.sprites.list_of_objects ])
 
+            # draw player weapon
+            self.draw.player_weapon([wall_shot, self.sprites.sprite_shot])
             # draw our fps
             self.draw.fps(self.clock)
 
             # draw mini map
             self.draw.mini_map(self.player)
 
+            self.interaction.interaction_object()
+            self.interaction.npc_action()
+            self.interaction.clear_world()
+
 
             for event in pygame.event.get():
                 if event.type == pygame.QUIT:
                     run = False
+
+                
+                if event.type == pygame.MOUSEBUTTONDOWN:
+                    if event.button == 1 and not self.player.shot:
+                        self.player.shot = True
             
             pygame.display.update()
             self.clock.tick(self.FPS)
